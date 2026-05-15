@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petals & Blooms | Flower Shop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .flower-card:hover { transform: translateY(-5px); }
+        /* Smooth fade for the pop-up */
+        #payment-modal { transition: opacity 0.3s ease; }
+    </style>
+</head>
+<body class="bg-pink-50 text-gray-800 font-sans">
+
+    <div id="payment-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl">
+            <h3 class="text-2xl font-bold text-gray-900">Scan to Pay</h3>
+            <p class="text-gray-500 text-sm mb-4">Please pay via GCash QR</p>
+            
+            <div class="bg-gray-100 p-4 rounded-2xl inline-block mb-4">
+                <img id="modal-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=GCash-Dummy-Payment" alt="GCash QR" class="w-48 h-48 mx-auto">
+            </div>
+
+            <div class="text-left bg-pink-50 p-4 rounded-xl mb-6">
+                <p class="text-xs text-pink-600 uppercase font-bold">Item</p>
+                <p id="modal-flower-name" class="font-bold text-gray-800">Flower Name</p>
+                <p class="text-xs text-pink-600 uppercase font-bold mt-2">Total Amount</p>
+                <p id="modal-price" class="text-xl font-black text-gray-900">₱0.00</p>
+            </div>
+
+            <button onclick="confirmPayment()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-lg hover:bg-blue-700 shadow-lg mb-3">
+                I've Sent Payment
+            </button>
+            <button onclick="closeModal()" class="text-gray-400 text-sm font-medium hover:text-gray-600">Cancel</button>
+        </div>
+    </div>
+
+    <header class="bg-white shadow-sm py-8 text-center border-b border-pink-100">
+        <h1 class="text-3xl font-bold text-pink-600">Petals & Blooms</h1>
+        <p class="text-gray-500 mt-1">Fresh bouquets delivered to your door</p>
+    </header>
+
+    <main class="max-w-6xl mx-auto p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" id="shop-grid">
+        </main>
+
+    <script>
+        const flowers = [
+            {
+                name: "Classic Red Roses",
+                price: 1200,
+                image: "https://images.unsplash.com/photo-1548510318-92ec00cf944b?q=80&w=500",
+            },
+            {
+                name: "Sunlight Sunflower",
+                price: 850,
+                image: "https://images.unsplash.com/photo-1597848212624-a19eb35e2651?q=80&w=500",
+            },
+            {
+                name: "White Lilies",
+                price: 1500,
+                image: "https://images.unsplash.com/photo-1508610048659-a06b669e3321?q=80&w=500",
+            }
+        ];
+
+        let currentOrder = { name: '', price: 0 };
+        const grid = document.getElementById('shop-grid');
+
+        flowers.forEach(flower => {
+            grid.innerHTML += `
+                <div class="flower-card bg-white rounded-3xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl border border-pink-50">
+                    <img src="${flower.image}" class="h-64 w-full object-cover">
+                    <div class="p-6">
+                        <h2 class="text-xl font-bold text-gray-900">${flower.name}</h2>
+                        <p class="text-pink-600 font-black text-2xl mt-1">₱${flower.price.toLocaleString()}</p>
+                        <button onclick="openPayment('${flower.name}', ${flower.price})" 
+                                class="mt-5 w-full bg-blue-600 text-white py-3 rounded-2xl font-bold hover:bg-blue-700 shadow-lg transition">
+                            Order Now
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+
+        function openPayment(name, price) {
+            currentOrder = { name, price };
+            document.getElementById('modal-flower-name').innerText = name;
+            document.getElementById('modal-price').innerText = `₱${price.toLocaleString()}`;
+            
+            // Show the modal
+            const modal = document.getElementById('payment-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('payment-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function confirmPayment() {
+            const fbPage = "https://www.facebook.com/elbimbo.elbin/";
+            // Using /messages/t/ will try to open the chat directly
+            const msg = `Hi! I just sent the payment for the ${currentOrder.name} (₱${currentOrder.price}). Here is my receipt:`;
+            
+            window.location.href = `https://m.me/elbimbo.elbin?text=${encodeURIComponent(msg)}`;
+        }
+    </script>
+</body>
+</html>
